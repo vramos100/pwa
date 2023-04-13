@@ -16,12 +16,19 @@ root.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker
-    .register("/sw.js")
-    .then(() => {
-      console.log("Service worker registered!");
-    })
-    .catch((err) => {
-      console.error("Error registering service worker: ", err);
-    });
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("/sw.js").then(
+      function (registration) {
+        // Registration was successful
+        console.log(
+          "ServiceWorker registration successful with scope: ",
+          registration.scope
+        );
+      },
+      function (err) {
+        // registration failed :(
+        console.log("ServiceWorker registration failed: ", err);
+      }
+    );
+  });
 }
