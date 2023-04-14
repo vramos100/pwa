@@ -13,6 +13,8 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
+import api from '../services/api';
+import { enqueueSnackbar } from 'notistack';
 
 function Copyright(props: any) {
   return (
@@ -34,38 +36,33 @@ function Copyright(props: any) {
 
 const theme = createTheme();
 
-// interface AuthContextData {
-//   signin: () => void; // ou outro tipo apropriado para "signin"
-//   // outras propriedades aqui
-// }
-
 export default function SignIn() {
-  // const { signin } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (event: any) => {
+  const handleSubmit = async (event: any) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
 
-    const email = data.get("email");
-    const password = data.get("password");
+    try {
+      const result = await api.post('/login', {
+        username: data.get('email'),
+        password: data.get('password'),
+      });
 
-    // if (typeof email === "string" && typeof password === "string") {
-    // signin(email, password);
-    // ...
-    // }
-    navigate("/dashboard");
+      enqueueSnackbar("Login OK!", {
+        variant: "success",
+      })
 
-    // const res = signin(data.get("email"), data.get("password"));
+      localStorage.setItem("token-sgap", result.data.access_token);
+      navigate("/dashboard");
+    
+    } catch (err) {
+      console.log(err);
+      enqueueSnackbar("Login ou senha inválidos. Verifique", {
+        variant: "error",
+      })
+    }  
 
-    // if (res) {
-    //   return;
-    // }
-    // console.log("res aqui", res);
   };
 
   return (
